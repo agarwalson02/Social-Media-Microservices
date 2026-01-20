@@ -1,0 +1,13 @@
+{
+  "name": "social-media-microservices",
+  "version": "1.0.0",
+  "description": "Microservices-based Social Media Application",
+  "main": "index.js",
+  "scripts": {
+    "install-all": "npm install --prefix api_gateway && npm install --prefix user_service && npm install --prefix post-service && npm install --prefix media-service && npm install --prefix search-service",
+    "start-all": "npx concurrently \"npm start --prefix api_gateway\" \"npm start --prefix user_service\" \"npm start --prefix post-service\" \"npm start --prefix media-service\" \"npm start --prefix search-service\""
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

@@ -1,0 +1,74 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+
+  api-gateway:
+    build: ./api_gateway
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - NODE_ENV=development
+      - USER_SERVICE_URL=http://user-service:3001
+      - POST_SERVICE_URL=http://post-service:3002
+      - MEDIA_SERVICE_URL=http://media-service:3003
+      - JWT_SECRET=secret
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - redis
+
+  user-service:
+    build: ./user_service
+    ports:
+      - "3001:3001"
+    environment:
+      - PORT=3001
+      - MONGO_URL=mongodb://mongodb:27017/user_database
+      - JWT_SECRET=secret
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - mongodb
+      - redis
+
+  post-service:
+    build: ./post-service
+    ports:
+      - "3002:3002"
+    environment:
+      - PORT=3002
+      - MONGO_URL=mongodb://mongodb:27017/post_database
+      - JWT_SECRET=secret
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - mongodb
+      - redis
+
+  media-service:
+    build: ./media-service
+    ports:
+      - "3003:3003"
+    environment:
+      - PORT=3003
+      - MONGO_URL=mongodb://mongodb:27017/media_database
+      - JWT_SECRET=secret
+      - REDIS_URL=redis://redis:6379
+      - CLOUD_NAME=your_cloud_name
+      - API_KEY=your_api_key
+      - API_SECRET=your_api_secret
+    depends_on:
+      - mongodb
+      - redis
+
+volumes:
+  mongo-data:
